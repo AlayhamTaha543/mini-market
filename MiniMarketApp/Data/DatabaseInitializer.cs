@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS Users (
     UserId INTEGER PRIMARY KEY AUTOINCREMENT,
     UserName TEXT NOT NULL,
     PasswordHash TEXT NOT NULL,
-    Role INTEGER NOT NULL,
+    Role INTEGER NOT NULL CHECK (Role IN (1, 2)),
     IsActive INTEGER NOT NULL DEFAULT 1,
     CreatedAt TEXT NOT NULL DEFAULT (datetime('now')),
     UpdatedAt TEXT NOT NULL DEFAULT (datetime('now'))
@@ -36,6 +36,8 @@ CREATE TABLE IF NOT EXISTS Sales (
     SaleId INTEGER PRIMARY KEY AUTOINCREMENT,
     UserId INTEGER NOT NULL,
     TotalAmount NUMERIC NOT NULL,
+    Discount NUMERIC NOT NULL DEFAULT 0,
+    TotalCost NUMERIC NOT NULL DEFAULT 0,
     IsActive INTEGER NOT NULL DEFAULT 1,
     CreatedAt TEXT NOT NULL DEFAULT (datetime('now')),
     FOREIGN KEY (UserId) REFERENCES Users(UserId)
@@ -45,6 +47,7 @@ CREATE TABLE IF NOT EXISTS SaleItems (
     SaleItemId INTEGER PRIMARY KEY AUTOINCREMENT,
     SaleId INTEGER NOT NULL,
     ProductId INTEGER NOT NULL,
+    ProductName TEXT NOT NULL,
     Quantity INTEGER NOT NULL,
     UnitSellPrice NUMERIC NOT NULL,
     UnitCostPrice NUMERIC NOT NULL,
@@ -56,10 +59,13 @@ CREATE TABLE IF NOT EXISTS SaleItems (
 CREATE TABLE IF NOT EXISTS Losses (
     LossId INTEGER PRIMARY KEY AUTOINCREMENT,
     ProductId INTEGER NOT NULL,
+    UserId INTEGER NOT NULL,
+    Reason TEXT NOT NULL CHECK (Reason IN ('Expired', 'Damaged', 'Stolen', 'Other')),
     Quantity INTEGER NOT NULL,
     UnitCostPrice NUMERIC NOT NULL,
     CreatedAt TEXT NOT NULL DEFAULT (datetime('now')),
-    FOREIGN KEY (ProductId) REFERENCES Products(ProductId)
+    FOREIGN KEY (ProductId) REFERENCES Products(ProductId),
+    FOREIGN KEY (UserId) REFERENCES Users(UserId)
 );";
 
         command.ExecuteNonQuery();
