@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="MiniMarketApp.Tests/MiniMarketApp.Tests.csproj" />
+  <Project Path="MiniMarketApp/MiniMarketApp.csproj" />
+</Solution>
