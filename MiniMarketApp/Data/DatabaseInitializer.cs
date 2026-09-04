@@ -1,3 +1,5 @@
+using Microsoft.Data.Sqlite;
+
 namespace MiniMarketApp.Data;
 
 public static class DatabaseInitializer
@@ -7,6 +9,11 @@ public static class DatabaseInitializer
         using var connection = databaseContext.CreateConnection();
         using var command = connection.CreateCommand();
         command.CommandText = @"
+CREATE TABLE IF NOT EXISTS Categories (
+    CategoryId INTEGER PRIMARY KEY AUTOINCREMENT,
+    Name TEXT NOT NULL UNIQUE
+);
+
 CREATE TABLE IF NOT EXISTS Products (
     ProductId INTEGER PRIMARY KEY AUTOINCREMENT,
     Name TEXT NOT NULL,
@@ -36,8 +43,8 @@ CREATE TABLE IF NOT EXISTS Sales (
     SaleId INTEGER PRIMARY KEY AUTOINCREMENT,
     UserId INTEGER NOT NULL,
     TotalAmount NUMERIC NOT NULL,
-    Discount NUMERIC NOT NULL DEFAULT 0,
     TotalCost NUMERIC NOT NULL DEFAULT 0,
+    Discount NUMERIC NOT NULL DEFAULT 0,
     IsActive INTEGER NOT NULL DEFAULT 1,
     CreatedAt TEXT NOT NULL DEFAULT (datetime('now')),
     FOREIGN KEY (UserId) REFERENCES Users(UserId)
@@ -69,5 +76,30 @@ CREATE TABLE IF NOT EXISTS Losses (
 );";
 
         command.ExecuteNonQuery();
+
+        EnsureColumnExists(connection, "Sales", "TotalCost", "NUMERIC NOT NULL DEFAULT 0");
+        EnsureColumnExists(connection, "Sales", "Discount", "NUMERIC NOT NULL DEFAULT 0");
+        EnsureColumnExists(connection, "SaleItems", "ProductName", "TEXT NOT NULL DEFAULT ''");
+        EnsureColumnExists(connection, "Losses", "UserId", "INTEGER NOT NULL DEFAULT 1");
+        EnsureColumnExists(connection, "Losses", "Reason", "TEXT NOT NULL DEFAULT 'Other'");
+    }
+
+    private static void EnsureColumnExists(SqliteConnection connection, string tableName, string columnName, string definition)
+    {
+        using var checkCommand = connection.CreateCommand();
+        checkCommand.CommandText = $"PRAGMA table_info({tableName});";
+
+        using var reader = checkCommand.ExecuteReader();
+        while (reader.Read())
+        {
+            if (string.Equals(reader.GetString(1), columnName, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+        }
+
+        using var alterCommand = connection.CreateCommand();
+        alterCommand.CommandText = $"ALTER TABLE {tableName} ADD COLUMN {columnName} {definition};";
+        alterCommand.ExecuteNonQuery();
     }
 }
