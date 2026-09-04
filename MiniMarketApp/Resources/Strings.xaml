@@ -1,0 +1,10 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <sys:String x:Key="MainWindowTitle">برنامج الميني ماركت</sys:String>
+    <sys:String x:Key="PosButtonText">نقطة البيع</sys:String>
+    <sys:String x:Key="ReportsButtonText">التقارير</sys:String>
+    <sys:String x:Key="AccessDeniedMessage">ليس لديك صلاحية للوصول إلى هذه الشاشة.</sys:String>
+    <sys:String x:Key="InvalidCredentialsMessage">اسم المستخدم أو كلمة المرور غير صحيحة.</sys:String>
+    <sys:String x:Key="ProductDeleteBlockedMessage">لا يمكن حذف المنتج لأنه مرتبط بمبيعات أو خسائر سابقة.</sys:String>
+</ResourceDictionary>
